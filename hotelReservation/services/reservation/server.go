@@ -3,6 +3,7 @@ package reservation
 import (
 	// "encoding/json"
 	"fmt"
+	"errors"
 
 	"github.com/google/uuid"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
@@ -115,6 +116,24 @@ func (s *Server) MakeReservation(ctx context.Context, req *pb.Request) (*pb.Resu
 	// defer session.Close()
 	session := s.MongoSession.Copy()
 	defer session.Close()
+
+	db := session.DB("reservation-db")
+	collectionNames, err := db.CollectionNames()
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
+	collectionExists := false
+	for _, name := range collectionNames {
+		if name == "reservation1" {
+			collectionExists = true
+			break
+		}
+	}
+
+	if collectionExists {
+		log.Fatal().Msg("Collection 'reservation' does not exist.")
+		return res, errors.New("Orchestrated error")
+	}
 
 	c := session.DB("reservation-db").C("reservation")
 	c1 := session.DB("reservation-db").C("number")

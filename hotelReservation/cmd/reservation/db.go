@@ -29,7 +29,20 @@ func initializeDatabase(url string) *mgo.Session {
 	// defer session.Close()
 	log.Info().Msg("New session successfull...")
 
-	c := session.DB("reservation-db").C("reservation")
+	db := session.DB("reservation-db")
+	collectionNames, err := db.CollectionNames()
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
+	for _, name := range collectionNames {
+		if name == "reservation1" {
+			log.Fatal().Msg("Collection 'reservation' does not exist.")
+			return session
+		}
+	}
+
+	c := db.C("reservation")
+	// c := session.DB("reservation-db").C("reservation")
 	count, err := c.Find(&bson.M{"hotelId": "4"}).Count()
 	if err != nil {
 		log.Fatal().Msg(err.Error())

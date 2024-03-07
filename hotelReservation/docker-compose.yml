@@ -1,7 +1,7 @@
 version: "2"
 services:
   consul:
-    image: consul:latest
+    image: hashicorp/consul:latest
     ports:
       - "8300:8300"
       - "8400:8400"
@@ -14,8 +14,11 @@ services:
       - TLS
       - JAEGER_SAMPLE_RATIO
       - LOG_LEVEL
-    build: .
-    image: hotel_reserv_frontend_single_node
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # build: .
+    # image: hotel_reserv_frontend_single_node
     entrypoint: frontend
     container_name: 'hotel_reserv_frontend'
     ports:
@@ -29,7 +32,7 @@ services:
       - TLS
       - JAEGER_SAMPLE_RATIO
       - LOG_LEVEL
-    build: .
+    # build: .
     image: hotel_reserv_profile_single_node
     entrypoint: profile
     container_name: 'hotel_reserv_profile'
@@ -40,7 +43,7 @@ services:
     restart: always
 
   search:
-    build: .
+    # build: .
     image: hotel_reserv_search_single_node
     entrypoint: search
     container_name: 'hotel_reserv_search'
@@ -59,7 +62,7 @@ services:
       - TLS
       - JAEGER_SAMPLE_RATIO
       - LOG_LEVEL
-    build: .
+    # build: .
     image: hotel_reserv_geo_single_node
     entrypoint: geo
     container_name: 'hotel_reserv_geo'
@@ -73,7 +76,7 @@ services:
       - TLS
       - JAEGER_SAMPLE_RATIO
       - LOG_LEVEL
-    build: .
+    # build: .
     image: hotel_reserv_rate_single_node
     entrypoint: rate
     container_name: 'hotel_reserv_rate'
@@ -88,7 +91,7 @@ services:
       - TLS
       - JAEGER_SAMPLE_RATIO
       - LOG_LEVEL
-    build: .
+    # build: .
     image: hotel_reserv_recommend_single_node
     entrypoint: recommendation
     container_name: 'hotel_reserv_recommendation'
@@ -102,7 +105,7 @@ services:
       - TLS
       - JAEGER_SAMPLE_RATIO
       - LOG_LEVEL
-    build: .
+    # build: .
     image: hotel_reserv_user_single_node
     entrypoint: user
     container_name: 'hotel_reserv_user'
@@ -116,8 +119,11 @@ services:
       - TLS
       - JAEGER_SAMPLE_RATIO
       - LOG_LEVEL
-    build: .
-    image: hotel_reserv_rsv_single_node
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # build: .
+    # image: hotel_reserv_rsv_single_node
     entrypoint: reservation
     container_name: 'hotel_reserv_reservation'
     depends_on:
@@ -208,6 +214,13 @@ services:
     volumes:
       - recommendation:/data/db
     
+  # mongodb-reservation-1:
+  #   image: mongo:4.4.6
+  #   command: mongod --replSet reservationSet --bind_ip_all --port 27017
+  #   volumes:
+  #     - reservation-1:/data/db
+  #   restart: always
+
   mongodb-reservation:
     image: mongo:4.4.6
     container_name: 'hotel_reserv_reservation_mongo'

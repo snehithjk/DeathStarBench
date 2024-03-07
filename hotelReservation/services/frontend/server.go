@@ -379,7 +379,7 @@ func (s *Server) reservationHandler(w http.ResponseWriter, r *http.Request) {
 		RoomNumber:   int32(numberOfRoom),
 	})
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 	if len(resResp.HotelId) == 0 {
