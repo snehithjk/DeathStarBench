@@ -27,6 +27,7 @@ import (
 
 	// "strings"
 	"strconv"
+	// "math/rand"
 )
 
 const name = "srv-reservation"
@@ -95,6 +96,66 @@ func (s *Server) Run() error {
 		return fmt.Errorf("failed register: %v", err)
 	}
 	log.Info().Msg("Successfully registered in consul")
+
+	// Memory-intensive operations
+    // largeSlice := make([][]byte, 10000)
+    // for i := range largeSlice {
+    //     innerSlice := make([]byte, 100000) // 100,000 bytes for each inner slice
+    //     if _, err := rand.Read(innerSlice); err != nil {
+    //         log.Fatal().Msgf("Error generating random data: %v", err)
+    //     }
+    //     largeSlice[i] = innerSlice
+    // }
+
+    // duplicatedSlice := make([][]byte, len(largeSlice))
+    // for i, original := range largeSlice {
+    //     duplicate := make([]byte, len(original))
+    //     copy(duplicate, original)
+    //     duplicatedSlice[i] = duplicate
+    // }
+	// log.Info().Msg("Mem usage max")
+
+	// // CPU-intensive operations
+	// matrixSize := 1000 // Define a sizable matrix
+    // matrixA := make([][]int, matrixSize)
+    // matrixB := make([][]int, matrixSize)
+    // resultMatrix := make([][]int, matrixSize)
+    // for i := 0; i < matrixSize; i++ {
+    //     matrixA[i] = make([]int, matrixSize)
+    //     matrixB[i] = make([]int, matrixSize)
+    //     resultMatrix[i] = make([]int, matrixSize)
+    //     for j := 0; j < matrixSize; j++ {
+    //         matrixA[i][j] = rand.Intn(100)
+    //         matrixB[i][j] = rand.Intn(100)
+    //     }
+    // }
+
+    // // Perform matrix multiplication
+    // for i := 0; i < matrixSize; i++ {
+    //     for j := 0; j < matrixSize; j++ {
+    //         sum := 0
+    //         for k := 0; k < matrixSize; k++ {
+    //             sum += matrixA[i][k] * matrixB[k][j]
+    //         }
+    //         resultMatrix[i][j] = sum
+    //     }
+    // }
+	// var largeArray []int
+    // for i := 0; i < 1000000; i++ {
+    //     largeArray = append(largeArray, rand.Intn(1000000))
+    // }
+
+    // // Sorting the large array (CPU-intensive operation)
+    // sort.Ints(largeArray)
+
+    // // Performing heavy mathematical calculations
+    // var result float64
+    // for i := 1; i <= 10000; i++ {
+    //     result += math.Sqrt(float64(i)) * math.Log(float64(i))
+    // }
+
+	// log.Info().Msg("Matrix mul")
+
 
 	return srv.Serve(lis)
 }
