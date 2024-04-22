@@ -32,7 +32,7 @@ services:
       - TLS
       - JAEGER_SAMPLE_RATIO
       - LOG_LEVEL
-    # build: .
+    build: .
     image: hotel_reserv_profile_single_node
     entrypoint: profile
     container_name: 'hotel_reserv_profile'
@@ -43,7 +43,7 @@ services:
     restart: always
 
   search:
-    # build: .
+    build: .
     image: hotel_reserv_search_single_node
     entrypoint: search
     container_name: 'hotel_reserv_search'
@@ -62,7 +62,7 @@ services:
       - TLS
       - JAEGER_SAMPLE_RATIO
       - LOG_LEVEL
-    # build: .
+    build: .
     image: hotel_reserv_geo_single_node
     entrypoint: geo
     container_name: 'hotel_reserv_geo'
@@ -76,7 +76,7 @@ services:
       - TLS
       - JAEGER_SAMPLE_RATIO
       - LOG_LEVEL
-    # build: .
+    build: .
     image: hotel_reserv_rate_single_node
     entrypoint: rate
     container_name: 'hotel_reserv_rate'
@@ -91,7 +91,7 @@ services:
       - TLS
       - JAEGER_SAMPLE_RATIO
       - LOG_LEVEL
-    # build: .
+    build: .
     image: hotel_reserv_recommend_single_node
     entrypoint: recommendation
     container_name: 'hotel_reserv_recommendation'
@@ -105,7 +105,7 @@ services:
       - TLS
       - JAEGER_SAMPLE_RATIO
       - LOG_LEVEL
-    # build: .
+    build: .
     image: hotel_reserv_user_single_node
     entrypoint: user
     container_name: 'hotel_reserv_user'

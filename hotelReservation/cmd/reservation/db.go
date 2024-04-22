@@ -36,7 +36,7 @@ func initializeDatabase(url string) *mgo.Session {
 	}
 	for _, name := range collectionNames {
 		if name == "reservation1" {
-			log.Fatal().Msg("Collection 'reservation' does not exist.")
+			log.Info().Msg("Collection 'reservation' does not exist in db.go.")
 			return session
 		}
 	}
