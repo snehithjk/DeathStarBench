@@ -25,7 +25,19 @@ func initializeDatabase(url string) *mgo.Session {
 	log.Info().Msg("New session successfull...")
 
 	log.Info().Msg("Generating test data...")
-	c := session.DB("recommendation-db").C("recommendation")
+	db := session.DB("recommendation-db")
+	collectionNames, err := db.CollectionNames()
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
+	for _, name := range collectionNames {
+		if name == "recommendation1" {
+			log.Info().Msg("Collection 'recommendation' does not exist in db.go.")
+			return session
+		}
+	}
+
+	c := db.C("recommendation")
 	count, err := c.Find(&bson.M{"hotelId": "1"}).Count()
 	if err != nil {
 		log.Fatal().Msg(err.Error())

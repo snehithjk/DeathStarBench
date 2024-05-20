@@ -3,6 +3,7 @@ package recommendation
 import (
 	// "encoding/json"
 	"fmt"
+	"errors"
 
 	"github.com/google/uuid"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
@@ -108,6 +109,14 @@ func (s *Server) Shutdown() {
 func (s *Server) GetRecommendations(ctx context.Context, req *pb.Request) (*pb.Result, error) {
 	res := new(pb.Result)
 	log.Trace().Msgf("GetRecommendations")
+	hotels := loadRecommendations(s.MongoSession)
+	log.Trace().Msgf("Reloading everytime")
+
+	if len(hotels) == 1 {
+        if _, ok := hotels["error"]; ok {
+            return res, errors.New("Orchestrated error")
+        }
+    } 
 	require := req.Require
 	if require == "dis" {
 		p1 := &geoindex.GeoPoint{
@@ -116,7 +125,7 @@ func (s *Server) GetRecommendations(ctx context.Context, req *pb.Request) (*pb.R
 			Plon: req.Lon,
 		}
 		min := math.MaxFloat64
-		for _, hotel := range s.hotels {
+		for _, hotel := range hotels {
 			tmp := float64(geoindex.Distance(p1, &geoindex.GeoPoint{
 				Pid:  "",
 				Plat: hotel.HLat,
@@ -126,7 +135,7 @@ func (s *Server) GetRecommendations(ctx context.Context, req *pb.Request) (*pb.R
 				min = tmp
 			}
 		}
-		for _, hotel := range s.hotels {
+		for _, hotel := range hotels {
 			tmp := float64(geoindex.Distance(p1, &geoindex.GeoPoint{
 				Pid:  "",
 				Plat: hotel.HLat,
@@ -138,24 +147,24 @@ func (s *Server) GetRecommendations(ctx context.Context, req *pb.Request) (*pb.R
 		}
 	} else if require == "rate" {
 		max := 0.0
-		for _, hotel := range s.hotels {
+		for _, hotel := range hotels {
 			if hotel.HRate > max {
 				max = hotel.HRate
 			}
 		}
-		for _, hotel := range s.hotels {
+		for _, hotel := range hotels {
 			if hotel.HRate == max {
 				res.HotelIds = append(res.HotelIds, hotel.HId)
 			}
 		}
 	} else if require == "price" {
 		min := math.MaxFloat64
-		for _, hotel := range s.hotels {
+		for _, hotel := range hotels {
 			if hotel.HPrice < min {
 				min = hotel.HPrice
 			}
 		}
-		for _, hotel := range s.hotels {
+		for _, hotel := range hotels {
 			if hotel.HPrice == min {
 				res.HotelIds = append(res.HotelIds, hotel.HId)
 			}
@@ -176,6 +185,36 @@ func loadRecommendations(session *mgo.Session) map[string]Hotel {
 	// defer session.Close()
 	s := session.Copy()
 	defer s.Close()
+
+	db := s.DB("recommendation-db")
+	collectionNames, err1 := db.CollectionNames()
+	if err1 != nil {
+		log.Fatal().Msg(err1.Error())
+	}
+	collectionExists := false
+	for _, name := range collectionNames {
+		if name == "recommendation1" {
+			collectionExists = true
+			break
+		}
+	}
+
+	if collectionExists {
+		log.Info().Msg("Collection 'recommendation' does not exist in server.go.")
+		profiles := make(map[string]Hotel)
+    
+		// Create a sampleHotel with nil value
+		sampleHotel := Hotel{
+			// Define hotel properties
+		}
+	
+
+		// Add the sampleHotel to the map with key "error"
+		profiles["error"] = sampleHotel
+
+		return profiles
+	}
+
 
 	c := s.DB("recommendation-db").C("recommendation")
 
